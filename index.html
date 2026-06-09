@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AbouDev Platform — Projets Numériques</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#020408;--card:#080d14;--card2:#0d1520;
+      --green:#00ff88;--cyan:#00d4ff;--gold:#ffb800;
+      --text:#e8f4ff;--sub:#5a7a9a;--bdr:rgba(0,212,255,.1);
+      --r:12px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+    /* GRID BG */
+    body::before{
+      content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
+      background-size:40px 40px;pointer-events:none;z-index:0
+    }
+
+    /* NAV */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px 24px;
+      background:rgba(2,4,8,.85);backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--bdr);
+    }
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo-icon{
+      width:34px;height:34px;border-radius:8px;
+      background:linear-gradient(135deg,var(--cyan),var(--green));
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:.85rem;color:#000
+    }
+    .logo-text{font-size:1.1rem;font-weight:800;letter-spacing:-0.5px}
+    .logo-text span{color:var(--cyan)}
+    .nav-links{display:flex;align-items:center;gap:6px}
+    .nav-link{
+      padding:7px 14px;border-radius:99px;font-size:.72rem;font-weight:700;
+      cursor:pointer;border:none;font-family:'Syne',sans-serif;
+      color:var(--sub);background:transparent;transition:all .2s;text-decoration:none
+    }
+    .nav-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+    .nav-cta{background:var(--cyan)!important;color:#000!important;padding:7px 16px}
+
+    /* HERO */
+    .hero{
+      min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      padding:100px 20px 60px;text-align:center;
+      position:relative;
+    }
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);
+      color:var(--cyan);padding:5px 14px;border-radius:99px;
+      font-size:.65rem;font-weight:700;letter-spacing:1px;
+      text-transform:uppercase;margin-bottom:28px;
+      font-family:'Space Mono',monospace;
+    }
+    .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero h1{
+      font-size:clamp(2.4rem,7vw,4.5rem);font-weight:800;
+      line-height:1.05;margin-bottom:20px;letter-spacing:-2px;
+    }
+    .hero h1 .line2{color:var(--cyan)}
+    .hero p{
+      color:var(--sub);font-size:.95rem;max-width:500px;
+      margin:0 auto 36px;line-height:1.7;font-weight:400;
+    }
+    .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:60px}
+    .btn{
+      padding:12px 24px;border-radius:var(--r);font-weight:700;
+      font-size:.8rem;cursor:pointer;border:none;
+      font-family:'Syne',sans-serif;transition:all .2s;
+      text-decoration:none;display:inline-flex;align-items:center;gap:7px;
+    }
+    .btn-primary{background:var(--cyan);color:#000}
+    .btn-primary:hover{background:#33ddff;transform:translateY(-1px)}
+    .btn-outline{background:transparent;border:1px solid var(--bdr);color:var(--text)}
+    .btn-outline:hover{border-color:var(--cyan);color:var(--cyan)}
+
+    /* STATS HERO */
+    .hero-stats{
+      display:flex;gap:32px;flex-wrap:wrap;justify-content:center;
+    }
+    .hstat{text-align:center}
+    .hstat-val{font-size:1.8rem;font-weight:800;color:var(--cyan);font-family:'Space Mono',monospace}
+    .hstat-label{font-size:.62rem;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+    /* SECTION */
+    section{max-width:1100px;margin:0 auto;padding:80px 20px;position:relative}
+    .sec-label{
+      font-family:'Space Mono',monospace;font-size:.62rem;
+      color:var(--cyan);text-transform:uppercase;letter-spacing:2px;
+      margin-bottom:10px;display:flex;align-items:center;gap:8px;
+    }
+    .sec-label::before{content:'';flex:1;height:1px;background:var(--bdr);max-width:40px}
+    .sec-title{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;margin-bottom:12px;letter-spacing:-1px}
+    .sec-sub{color:var(--sub);font-size:.85rem;margin-bottom:48px;line-height:1.7}
+
+    /* PROJETS GRID */
+    .projets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .projet-card{
+      background:var(--card);border:1px solid var(--bdr);
+      border-radius:var(--r);padding:24px;
+      transition:all .25s;cursor:pointer;position:relative;overflow:hidden;
+    }
+    .projet-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,var(--cyan),var(--green));
+      transform:scaleX(0);transform-origin:left;transition:transform .3s;
+    }
+    .projet-card:hover{border-color:rgba(0,212,255,.3);transform:translateY(-2px);background:var(--card2)}
+    .projet-card:hover::before{transform:scaleX(1)}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+    .card-icon{
+      width:44px;height:44px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.3rem;flex-shrink:0;
+    }
+    .card-badges{display:flex;gap:6px;flex-wrap:wrap}
+    .badge{
+      padding:3px 8px;border-radius:99px;
+      font-size:.58rem;font-weight:700;font-family:'Space Mono',monospace;
+    }
+    .badge-type{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}
+    .badge-version{background:rgba(0,255,136,.08);color:var(--green);border:1px solid rgba(0,255,136,.15)}
+    .badge-featured{background:rgba(255,184,0,.1);color:var(--gold);border:1px solid rgba(255,184,0,.2)}
+    .card-nom{font-size:1rem;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
+    .card-desc{font-size:.73rem;color:var(--sub);line-height:1.6;margin-bottom:16px}
+    .card-techs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+    .tech-tag{
+      background:rgba(255,255,255,.04);border:1px solid var(--bdr);
+      padding:2px 8px;border-radius:4px;font-size:.58rem;color:var(--sub);
+    }
+    .card-footer{display:flex;align-items:center;justify-content:space-between}
+    .card-stats{display:flex;gap:12px}
+    .cstat{font-size:.62rem;color:var(--sub);display:flex;align-items:center;gap:3px;font-family:'Space Mono',monospace}
+    .btn-card{
+      padding:6px 14px;border-radius:8px;font-size:.65rem;font-weight:700;
+      background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);
+      color:var(--cyan);cursor:pointer;font-family:'Syne',sans-serif;
+      transition:all .2s;
+    }
+    .btn-card:hover{background:var(--cyan);color:#000}
+
+    /* FEATURED */
+    .featured-card{
+      grid-column:1/-1;
+      display:grid;grid-template-columns:1fr 1fr;gap:32px;
+      background:var(--card);border:1px solid rgba(0,212,255,.2);
+      border-radius:var(--r);padding:32px;
+    }
+    @media(max-width:600px){.featured-card{grid-template-columns:1fr}}
+    .featured-left{}
+    .featured-tag{
+      display:inline-flex;align-items:center;gap:5px;
+      background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.2);
+      color:var(--gold);padding:4px 10px;border-radius:99px;
+      font-size:.6rem;font-weight:700;margin-bottom:14px;font-family:'Space Mono',monospace;
+    }
+    .featured-nom{font-size:1.6rem;font-weight:800;margin-bottom:8px;letter-spacing:-.5px}
+    .featured-desc{color:var(--sub);font-size:.8rem;line-height:1.7;margin-bottom:20px}
+    .featured-fonctionnalites{display:flex;flex-direction:column;gap:6px;margin-bottom:24px}
+    .feat-item{display:flex;align-items:center;gap:8px;font-size:.72rem}
+    .feat-item::before{content:'→';color:var(--green);font-family:'Space Mono',monospace}
+    .featured-btns{display:flex;gap:10px;flex-wrap:wrap}
+    .featured-right{
+      background:var(--card2);border-radius:10px;padding:20px;
+      border:1px solid var(--bdr);display:flex;flex-direction:column;gap:12px;
+    }
+    .fr-title{font-size:.7rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .version-list{display:flex;flex-direction:column;gap:8px}
+    .v-item{display:flex;align-items:flex-start;gap:10px;font-size:.7rem}
+    .v-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);margin-top:3px;flex-shrink:0}
+    .v-num{font-family:'Space Mono',monospace;color:var(--cyan);font-weight:700;white-space:nowrap}
+    .v-note{color:var(--sub);line-height:1.5}
+
+    /* TYPES DE PROJETS */
+    .types-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+    .type-card{
+      background:var(--card);border:1px solid var(--bdr);
+      border-radius:var(--r);padding:20px 16px;text-align:center;
+      transition:all .2s;cursor:pointer;
+    }
+    .type-card:hover{border-color:rgba(0,212,255,.3);background:var(--card2)}
+    .type-icon{font-size:1.8rem;margin-bottom:8px}
+    .type-nom{font-size:.75rem;font-weight:800;margin-bottom:3px}
+    .type-count{font-size:.62rem;color:var(--sub);font-family:'Space Mono',monospace}
+
+    /* COMMENT ÇA MARCHE */
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .step{
+      background:var(--card);border:1px solid var(--bdr);
+      border-radius:var(--r);padding:24px;position:relative;
+    }
+    .step-num{
+      font-size:2.5rem;font-weight:800;font-family:'Space Mono',monospace;
+      color:rgba(0,212,255,.1);margin-bottom:12px;line-height:1;
+    }
+    .step-title{font-size:.9rem;font-weight:800;margin-bottom:6px}
+    .step-desc{font-size:.72rem;color:var(--sub);line-height:1.6}
+
+    /* CONTACT */
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    @media(max-width:640px){.contact-grid{grid-template-columns:1fr}}
+    .contact-form{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:28px}
+    .form-group{margin-bottom:14px}
+    .form-label{font-size:.65rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
+    .form-input{
+      width:100%;background:var(--card2);border:1px solid var(--bdr);
+      border-radius:8px;padding:11px 14px;color:var(--text);
+      font-family:'Syne',sans-serif;font-size:.82rem;outline:none;
+      transition:border-color .15s;
+    }
+    .form-input:focus{border-color:var(--cyan)}
+    textarea.form-input{resize:vertical;min-height:100px}
+    .btn-send{
+      width:100%;padding:13px;background:var(--cyan);color:#000;
+      border:none;border-radius:var(--r);font-family:'Syne',sans-serif;
+      font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s;
+    }
+    .btn-send:hover{background:#33ddff}
+    .contact-info{display:flex;flex-direction:column;gap:16px}
+    .cinfo-card{
+      background:var(--card);border:1px solid var(--bdr);
+      border-radius:var(--r);padding:20px;
+    }
+    .cinfo-icon{font-size:1.4rem;margin-bottom:8px}
+    .cinfo-title{font-size:.82rem;font-weight:800;margin-bottom:4px}
+    .cinfo-val{font-size:.72rem;color:var(--sub);font-family:'Space Mono',monospace}
+
+    /* FOOTER */
+    footer{
+      border-top:1px solid var(--bdr);padding:40px 24px;
+      display:flex;align-items:center;justify-content:space-between;
+      flex-wrap:wrap;gap:16px;
+    }
+    .footer-logo{font-size:.9rem;font-weight:800}
+    .footer-logo span{color:var(--cyan)}
+    .footer-links{display:flex;gap:16px;flex-wrap:wrap}
+    .footer-link{font-size:.7rem;color:var(--sub);text-decoration:none;transition:color .2s}
+    .footer-link:hover{color:var(--cyan)}
+    .footer-copy{font-size:.65rem;color:var(--sub)}
+
+    /* TOAST */
+    .toast{
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+      background:var(--cyan);color:#000;padding:10px 22px;
+      border-radius:99px;font-weight:800;font-size:.75rem;
+      opacity:0;pointer-events:none;transition:opacity .3s;z-index:999;
+    }
+    .toast.on{opacity:1}
+
+    /* LOADING */
+    .loading{
+      display:flex;align-items:center;justify-content:center;
+      gap:8px;color:var(--sub);font-size:.78rem;padding:40px;
+      font-family:'Space Mono',monospace;
+    }
+    .loading::before{
+      content:'';width:16px;height:16px;border-radius:50%;
+      border:2px solid var(--bdr);border-top-color:var(--cyan);
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* SCROLL REVEAL */
+    .reveal{opacity:0;transform:translateY(20px);transition:all .5s}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">A</div>
+    <div class="logo-text">Abou<span>Dev</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#projets" class="nav-link">Projets</a>
+    <a href="#types" class="nav-link">Catégories</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <a href="/catalogue" class="nav-link nav-cta btn">Catalogue →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <span></span> AbouDev Platform v1.0 — En ligne
+  </div>
+  <h1>
+    Projets numériques<br>
+    <span class="line2">made in CI 🇨🇮</span>
+  </h1>
+  <p>Découvrez, téléchargez et intégrez les projets d'Aboudev Labs — APIs, jeux web, outils, applications — conçus pour les développeurs africains.</p>
+  <div class="hero-btns">
+    <a href="#projets" class="btn btn-primary">🚀 Voir les projets</a>
+    <a href="#contact" class="btn btn-outline">💬 Me contacter</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat">
+      <div class="hstat-val" id="stat-projets">—</div>
+      <div class="hstat-label">Projets</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="stat-dl">—</div>
+      <div class="hstat-label">Téléchargements</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="stat-users">—</div>
+      <div class="hstat-label">Utilisateurs</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val">4+</div>
+      <div class="hstat-label">Années dev</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJETS -->
+<section id="projets">
+  <div class="sec-label">Catalogue</div>
+  <h2 class="sec-title">Derniers projets</h2>
+  <p class="sec-sub">APIs, jeux, outils et plateformes construits depuis Termux, San Pedro.</p>
+  <div class="projets-grid" id="projets-grid">
+    <div class="loading">Chargement des projets...</div>
+  </div>
+  <div style="text-align:center;margin-top:28px">
+    <a href="/catalogue" class="btn btn-outline">Voir tout le catalogue →</a>
+  </div>
+</section>
+
+<!-- TYPES -->
+<section id="types">
+  <div class="sec-label">Catégories</div>
+  <h2 class="sec-title">Types de projets</h2>
+  <p class="sec-sub">Des solutions dans tous les domaines du développement.</p>
+  <div class="types-grid">
+    <div class="type-card" onclick="filtrer('API')">
+      <div class="type-icon">🔌</div>
+      <div class="type-nom">APIs</div>
+      <div class="type-count" id="count-api">— projets</div>
+    </div>
+    <div class="type-card" onclick="filtrer('Jeu Web')">
+      <div class="type-icon">🎮</div>
+      <div class="type-nom">Jeux Web</div>
+      <div class="type-count" id="count-jeu">— projets</div>
+    </div>
+    <div class="type-card" onclick="filtrer('E-commerce')">
+      <div class="type-icon">🛍️</div>
+      <div class="type-nom">E-commerce</div>
+      <div class="type-count" id="count-ecom">— projets</div>
+    </div>
+    <div class="type-card" onclick="filtrer('Outil')">
+      <div class="type-icon">🔧</div>
+      <div class="type-nom">Outils Dev</div>
+      <div class="type-count" id="count-outil">— projets</div>
+    </div>
+    <div class="type-card" onclick="filtrer('Application')">
+      <div class="type-icon">📱</div>
+      <div class="type-nom">Applications</div>
+      <div class="type-count" id="count-app">— projets</div>
+    </div>
+    <div class="type-card" onclick="filtrer('Éducation')">
+      <div class="type-icon">📚</div>
+      <div class="type-nom">Éducation</div>
+      <div class="type-count" id="count-edu">— projets</div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMENT ÇA MARCHE -->
+<section>
+  <div class="sec-label">Processus</div>
+  <h2 class="sec-title">Comment ça marche</h2>
+  <p class="sec-sub">Accédez à tous les projets en quelques étapes simples.</p>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-title">Parcourez le catalogue</div>
+      <div class="step-desc">Explorez tous les projets classés par type, date et popularité.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <div class="step-title">Consultez les détails</div>
+      <div class="step-desc">Chaque projet a une page complète avec captures, fonctionnalités et historique.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <div class="step-title">Téléchargez</div>
+      <div class="step-desc">Téléchargez le code source, l'APK ou le ZIP directement.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">04</div>
+      <div class="step-title">Intégrez & testez</div>
+      <div class="step-desc">Suivez la documentation pour intégrer rapidement dans vos projets.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-label">Contact</div>
+  <h2 class="sec-title">Me contacter</h2>
+  <p class="sec-sub">Questions, suggestions ou signalement d'erreurs — je réponds rapidement.</p>
+  <div class="contact-grid">
+    <div class="contact-form">
+      <div class="form-group">
+        <label class="form-label">Nom complet *</label>
+        <input type="text" class="form-input" id="c-nom" placeholder="Votre nom">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-input" id="c-email" placeholder="votre@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sujet</label>
+        <input type="text" class="form-input" id="c-sujet" placeholder="Ex: Suggestion pour VITE API">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea class="form-input" id="c-message" placeholder="Votre message..."></textarea>
+      </div>
+      <button class="btn-send" onclick="envoyerMessage()">📤 Envoyer le message</button>
+    </div>
+    <div class="contact-info">
+      <div class="cinfo-card">
+        <div class="cinfo-icon">👨‍💻</div>
+        <div class="cinfo-title">Diomandé Abou Johan</div>
+        <div class="cinfo-val">Développeur • San Pedro, CI 🇨🇮</div>
+      </div>
+      <div class="cinfo-card">
+        <div class="cinfo-icon">📧</div>
+        <div class="cinfo-title">Email</div>
+        <div class="cinfo-val">daboujohan@gmail.com</div>
+      </div>
+      <div class="cinfo-card">
+        <div class="cinfo-icon">💻</div>
+        <div class="cinfo-title">GitHub</div>
+        <div class="cinfo-val">github.com/daboujohan-hub</div>
+      </div>
+      <div class="cinfo-card">
+        <div class="cinfo-icon">⚡</div>
+        <div class="cinfo-title">Stack principal</div>
+        <div class="cinfo-val">Node.js • Firebase • Termux</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Abou<span>Dev</span> Platform</div>
+  <div class="footer-links">
+    <a href="/catalogue" class="footer-link">Catalogue</a>
+    <a href="#contact" class="footer-link">Contact</a>
+    <a href="https://github.com/daboujohan-hub" class="footer-link" target="_blank">GitHub</a>
+    <a href="https://viteapi.onrender.com" class="footer-link" target="_blank">VITE API</a>
+  </div>
+  <div class="footer-copy">© 2026 Aboudev Labs — Côte d'Ivoire 🇨🇮</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let tousLesProjets = [];
+
+function toast(msg, ok=true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = ok ? 'var(--cyan)' : '#ff4466';
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 3000);
+}
+
+function iconeType(type) {
+  const icons = { 'API':'🔌','Jeu Web':'🎮','E-commerce':'🛍️','Outil':'🔧','Application':'📱','Éducation':'📚','Langage':'⌨️','Plateforme':'🌐' };
+  return icons[type] || '📦';
+}
+
+function couleurType(type) {
+  const cols = { 'API':'rgba(0,212,255,.15)','Jeu Web':'rgba(0,255,136,.1)','E-commerce':'rgba(255,184,0,.1)','Outil':'rgba(180,0,255,.1)','Application':'rgba(255,90,0,.1)','Éducation':'rgba(0,150,255,.1)' };
+  return cols[type] || 'rgba(255,255,255,.05)';
+}
+
+function carteProjet(p) {
+  if (p.featured) {
+    return `<div class="featured-card projet-card" onclick="voirProjet('${p.id}')">
+      <div class="featured-left">
+        <div class="featured-tag">⭐ Projet vedette</div>
+        <div class="featured-nom">${p.nom}</div>
+        <div class="featured-desc">${p.description_courte}</div>
+        <div class="featured-fonctionnalites">
+          ${(p.fonctionnalites||[]).slice(0,4).map(f=>`<div class="feat-item">${f}</div>`).join('')}
+        </div>
+        <div class="featured-btns">
+          ${p.lien_demo ? `<a href="${p.lien_demo}" target="_blank" class="btn btn-primary" onclick="event.stopPropagation()">🌐 Demo live</a>` : ''}
+          <button class="btn btn-outline" onclick="event.stopPropagation();telecharger('${p.id}')">⬇️ Télécharger</button>
+        </div>
+      </div>
+      <div class="featured-right">
+        <div class="fr-title">Historique versions</div>
+        <div class="version-list">
+          ${(p.versions||[]).slice(-3).reverse().map(v=>`
+            <div class="v-item">
+              <div class="v-dot"></div>
+              <div>
+                <div class="v-num">v${v.version}</div>
+                <div class="v-note">${v.notes}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+        <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--bdr)">
+          <div style="display:flex;gap:16px">
+            <div class="cstat">👁️ ${p.vues||0}</div>
+            <div class="cstat">⬇️ ${p.telechargements||0}</div>
+            <div class="badge badge-version">v${p.version}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+  return `<div class="projet-card reveal" onclick="voirProjet('${p.id}')">
+    <div class="card-top">
+      <div class="card-icon" style="background:${couleurType(p.type)}">${iconeType(p.type)}</div>
+      <div class="card-badges">
+        <span class="badge badge-type">${p.type}</span>
+        <span class="badge badge-version">v${p.version}</span>
+      </div>
+    </div>
+    <div class="card-nom">${p.nom}</div>
+    <div class="card-desc">${p.description_courte}</div>
+    <div class="card-techs">${(p.technologies||[]).slice(0,3).map(t=>`<span class="tech-tag">${t}</span>`).join('')}</div>
+    <div class="card-footer">
+      <div class="card-stats">
+        <span class="cstat">👁️ ${p.vues||0}</span>
+        <span class="cstat">⬇️ ${p.telechargements||0}</span>
+      </div>
+      <button class="btn-card" onclick="event.stopPropagation();telecharger('${p.id}')">Télécharger</button>
+    </div>
+  </div>`;
+}
+
+async function chargerProjets() {
+  try {
+    const res = await fetch(`${API}/api/v1/projets`);
+    const data = await res.json();
+    tousLesProjets = data.projets || [];
+    afficherProjets(tousLesProjets);
+    mettreAJourStats(data.projets);
+  } catch(e) {
+    document.getElementById('projets-grid').innerHTML = '<div style="color:var(--sub);text-align:center;padding:40px">Connexion au serveur...</div>';
+  }
+}
+
+function afficherProjets(projets) {
+  const grid = document.getElementById('projets-grid');
+  if (!projets.length) { grid.innerHTML = '<div style="color:var(--sub);padding:40px;text-align:center">Aucun projet trouvé.</div>'; return; }
+  const featured = projets.filter(p=>p.featured);
+  const autres   = projets.filter(p=>!p.featured);
+  grid.innerHTML = [...featured,...autres].slice(0,6).map(carteProjet).join('');
+  revealCards();
+}
+
+function mettreAJourStats(projets) {
+  document.getElementById('stat-projets').textContent = projets.length;
+  const totalDl = projets.reduce((s,p)=>s+(p.telechargements||0),0);
+  document.getElementById('stat-dl').textContent = totalDl;
+  // Compter par type
+  const types = {};
+  projets.forEach(p => { types[p.type] = (types[p.type]||0)+1; });
+  const map = {'API':'api','Jeu Web':'jeu','E-commerce':'ecom','Outil':'outil','Application':'app','Éducation':'edu'};
+  Object.entries(map).forEach(([type,id]) => {
+    const el = document.getElementById('count-'+id);
+    if (el) el.textContent = (types[type]||0) + ' projet' + ((types[type]||0)>1?'s':'');
+  });
+}
+
+async function chargerStats() {
+  try {
+    const res = await fetch(`${API}/api/v1/stats`);
+    const data = await res.json();
+    document.getElementById('stat-users').textContent = data.utilisateurs || 0;
+  } catch(e) {}
+}
+
+function filtrer(type) {
+  const filtrés = tousLesProjets.filter(p=>p.type===type);
+  afficherProjets(filtrés.length ? filtrés : tousLesProjets);
+  document.getElementById('projets').scrollIntoView({behavior:'smooth'});
+  toast(filtrés.length ? `${filtrés.length} projet(s) — ${type}` : 'Aucun projet dans cette catégorie');
+}
+
+async function telecharger(id) {
+  try {
+    await fetch(`${API}/api/v1/projets/${id}/telecharger`, {method:'POST'});
+    toast('⬇️ Téléchargement comptabilisé !');
+  } catch(e) {}
+}
+
+function voirProjet(id) {
+  window.location.href = `/catalogue?projet=${id}`;
+}
+
+async function envoyerMessage() {
+  const nom     = document.getElementById('c-nom').value.trim();
+  const email   = document.getElementById('c-email').value.trim();
+  const sujet   = document.getElementById('c-sujet').value.trim();
+  const message = document.getElementById('c-message').value.trim();
+  if (!nom||!email||!message) { toast('⚠️ Remplissez les champs obligatoires', false); return; }
+  try {
+    const res  = await fetch(`${API}/api/v1/contact`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nom,email,sujet,message})
+    });
+    const data = await res.json();
+    if (data.succes) {
+      toast('✅ Message envoyé !');
+      document.getElementById('c-nom').value='';
+      document.getElementById('c-email').value='';
+      document.getElementById('c-sujet').value='';
+      document.getElementById('c-message').value='';
+    } else { toast('❌ '+data.erreur, false); }
+  } catch(e) { toast('❌ Erreur de connexion', false); }
+}
+
+function revealCards() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+// Init
+chargerProjets();
+chargerStats();
+</script>
+</body>
+</html>
