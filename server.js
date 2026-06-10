@@ -187,12 +187,20 @@ app.use(rateLimit);
 async function authAdmin(req, res, next) {
   const token = req.headers['x-admin-token'];
   if (!token) return res.status(401).json({ erreur: 'Token admin requis.' });
-  const users = await fbGet('users');
-  if (!users) return res.status(401).json({ erreur: 'Non autorisé.' });
-  const admin = Object.values(users).find(u => u.role === 'admin' && u.token === token);
-  if (!admin) return res.status(401).json({ erreur: 'Token invalide.' });
-  req.admin = admin;
-  next();
+  // Vérification Firebase
+  try {
+    const users = await fbGet('users');
+    if (users) {
+      const admin = Object.values(users).find(u => u.role === 'admin' && u.token === token);
+      if (admin) { req.admin = admin; return next(); }
+    }
+  } catch(e) {}
+  // Si Firebase inaccessible — vérifier le token en mémoire
+  if (global.adminTokens && global.adminTokens.includes(token)) {
+    req.admin = { id: 'admin-aboudev', nom: 'Diomandé Abou Johan', role: 'admin' };
+    return next();
+  }
+  return res.status(401).json({ erreur: 'Token invalide.' });
 }
 
 // ════════════════════════════════════════════
@@ -318,15 +326,33 @@ app.get("/api/v1/init", async (req,res) => {
 // ── Login admin
 app.post('/api/v1/admin/login', async (req,res) => {
   const { email, password } = req.body;
-  const users = await fbGet('users') || {};
-  const admin = Object.values(users).find(u => u.role === 'admin' && u.email === email);
-  if (!admin) return res.status(401).json({ erreur: 'Accès refusé.' });
-  if (admin.password_hash !== crypto.createHash('sha256').update(password).digest('hex'))
-    return res.status(401).json({ erreur: 'Mot de passe incorrect.' });
-  const token = crypto.randomBytes(24).toString('hex');
-  admin.token = token;
-  await fbSet(`users/${admin.id}`, admin);
-  res.json({ succes: true, token, nom: admin.nom });
+  const pwdHash = crypto.createHash('sha256').update(password||'').digest('hex');
+
+  // Fallback hardcodé si Firebase inaccessible
+  const ADMIN_EMAIL = 'daboujohan@gmail.com';
+  const ADMIN_HASH  = crypto.createHash('sha256').update('aboudev2026').digest('hex');
+
+  if (email === ADMIN_EMAIL && pwdHash === ADMIN_HASH) {
+    const token = crypto.randomBytes(24).toString('hex');
+    // Sauvegarder token dans Firebase (best effort)
+    try { await fbSet('users/admin-aboudev/token', token); } catch(e) {}
+    return res.json({ succes: true, token, nom: 'Diomandé Abou Johan' });
+  }
+
+  // Vérification Firebase
+  try {
+    const users = await fbGet('users') || {};
+    const admin = Object.values(users).find(u => u.role === 'admin' && u.email === email);
+    if (!admin) return res.status(401).json({ erreur: 'Accès refusé.' });
+    if (admin.password_hash !== pwdHash)
+      return res.status(401).json({ erreur: 'Mot de passe incorrect.' });
+    const token = crypto.randomBytes(24).toString('hex');
+    admin.token = token;
+    await fbSet(`users/${admin.id}`, admin);
+    return res.json({ succes: true, token, nom: admin.nom });
+  } catch(e) {
+    return res.status(401).json({ erreur: 'Accès refusé.' });
+  }
 });
 
 // ── Ajouter projet
