@@ -306,6 +306,15 @@ app.post('/api/v1/contact', async (req,res) => {
 //  ROUTES ADMIN
 // ════════════════════════════════════════════
 
+// ── Init forcé
+app.get("/api/v1/init", async (req,res) => {
+  try {
+    await fbSet("users/admin-aboudev", ADMIN);
+    for (const p of PROJETS_INITIAUX) { await fbSet(`projets/${p.id}`, p); }
+    res.json({ succes: true, message: "Admin et projets initialisés !" });
+  } catch(e) { res.status(500).json({ erreur: e.message }); }
+});
+
 // ── Login admin
 app.post('/api/v1/admin/login', async (req,res) => {
   const { email, password } = req.body;
