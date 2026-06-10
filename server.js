@@ -20,6 +20,7 @@ app.use(express.static(__dirname));
 //  FIREBASE CONFIG
 // ════════════════════════════════════════════
 const FIREBASE_URL = process.env.FIREBASE_URL || 'https://aboudev-platform-default-rtdb.firebaseio.com';
+// Firebase aboudev-platform activé ✅
 
 async function fbGet(p) {
   return new Promise((resolve) => {
